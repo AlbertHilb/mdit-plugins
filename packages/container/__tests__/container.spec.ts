@@ -105,5 +105,23 @@ describe("container", () => {
         '<div class="name">\n<p>foo</p>\n</div>\n',
       );
     });
+
+    it("should add an header with inline markup", () => {
+      const markdownIt = MarkdownIt({ linkify: true }).use(container, {
+        name: "name",
+        validate: (params) => {
+          params = params.trim();
+          const found = /^name\s+\[(.*)\]\s*$/.exec(params);
+
+          const validateRes = found ? { inlineContent: found[1] } : false;
+
+          return validateRes;
+        },
+      });
+
+      expect(
+        markdownIt.render("::: name [**Inline** content]\nfoo\n:::\n"),
+      ).toBe("<p>:::\nfoo\n:::</p>\n");
+    });
   });
 });

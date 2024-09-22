@@ -67,7 +67,9 @@ export const container: PluginWithOptions<MarkdownItContainerOptions> = (
     const markup = state.src.slice(start, pos);
     const params = state.src.slice(pos, max);
 
-    if (!validate(params, markup)) return false;
+    const validateRes = validate(params, markup);
+
+    if (!validateRes) return false;
 
     // Since start is found, we can report success here in validation mode
     if (silent) return true;
@@ -131,6 +133,28 @@ export const container: PluginWithOptions<MarkdownItContainerOptions> = (
     openToken.block = true;
     openToken.info = params;
     openToken.map = [startLine, nextLine];
+
+    if (typeof validateRes === "object") {
+      const { inlineContent } = validateRes;
+
+      if (inlineContent) {
+        const headerTokenType = "container_header";
+        const tag = "header";
+
+        const openHeaderToken = state.push(`${headerTokenType}_open`, tag, 1);
+
+        openHeaderToken.map = [startLine, state.line];
+        openHeaderToken.children = [];
+
+        const inlineContentToken = state.push("inline", "", 0);
+
+        inlineContentToken.content = inlineContent;
+        inlineContentToken.map = [startLine, state.line];
+        inlineContentToken.children = [];
+
+        state.push(`${headerTokenType}_close`, tag, -1);
+      }
+    }
 
     state.md.block.tokenize(state, startLine + 1, nextLine);
 
