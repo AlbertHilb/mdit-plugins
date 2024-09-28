@@ -1,5 +1,18 @@
 import type { RenderRule } from "markdown-it/lib/renderer.mjs";
 
+export interface MarkdownItContainerValidateResult {
+  /**
+   * Container inline content
+   */
+  inlineContent?: string;
+
+  headerTokenType?: string;
+
+  tag?: string;
+
+  attrs?: [string, string][];
+}
+
 export interface MarkdownItContainerOptions {
   /**
    * Container name
@@ -32,7 +45,10 @@ export interface MarkdownItContainerOptions {
    *
    * @default params.trim().split(" ", 2)[0] === name
    */
-  validate?: (params: string, markup: string) => boolean;
+  validate?: (
+    params: string,
+    markup: string,
+  ) => boolean | MarkdownItContainerValidateResult;
 
   /**
    * Opening tag render function

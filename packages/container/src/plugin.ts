@@ -135,11 +135,16 @@ export const container: PluginWithOptions<MarkdownItContainerOptions> = (
     openToken.map = [startLine, nextLine];
 
     if (typeof validateRes === "object") {
-      const { inlineContent } = validateRes;
+      const { inlineContent, attrs } = validateRes;
+      let { headerTokenType, tag } = validateRes;
+
+      if (attrs) {
+        openToken.attrs = attrs;
+      }
 
       if (inlineContent) {
-        const headerTokenType = "container_header";
-        const tag = "header";
+        headerTokenType = headerTokenType || "container_header";
+        tag = tag || "header";
 
         const openHeaderToken = state.push(`${headerTokenType}_open`, tag, 1);
 

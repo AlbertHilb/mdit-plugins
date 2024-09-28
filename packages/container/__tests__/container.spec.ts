@@ -113,15 +113,15 @@ describe("container", () => {
           params = params.trim();
           const found = /^name\s+\[(.*)\]\s*$/.exec(params);
 
-          const validateRes = found ? { inlineContent: found[1] } : false;
-
-          return validateRes;
+          return found ? { inlineContent: found[1] } : false;
         },
       });
 
       expect(
         markdownIt.render("::: name [**Inline** content]\nfoo\n:::\n"),
-      ).toBe("<p>:::\nfoo\n:::</p>\n");
+      ).toBe(
+        '<div class="name">\n<header><strong>Inline</strong> content</header>\n<p>foo</p>\n</div>\n',
+      );
     });
   });
 });
